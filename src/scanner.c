@@ -12,6 +12,10 @@ enum TokenType {
     ERROR_SENTINEL
 };
 
+/* The number of entries in an array, so that a count passed alongside an
+   array cannot drift from its contents. */
+#define COUNT(a) ((int)(sizeof(a) / sizeof((a)[0])))
+
 typedef struct {
     uint32_t left;
     uint32_t right;
@@ -194,27 +198,27 @@ bool tree_sitter_ott_external_scanner_scan(
     if (valid_symbols[HOM_STRING]) {
         lexer->result_symbol = HOM_STRING;
         delim_exp delims[] = { HOM_CLOSE, HOM_INNER_OPEN, DOTS };
-        return scan_string(lexer, 5, delims, false);
+        return scan_string(lexer, COUNT(delims), delims, false);
     }
     if (valid_symbols[HOM_INNER_STRING_RIGHT]) {
         lexer->result_symbol = HOM_INNER_STRING_RIGHT;
         delim_exp delims[] = { HOM_INNER_CLOSE };
-        return scan_string(lexer, 1, delims, true);
+        return scan_string(lexer, COUNT(delims), delims, true);
     }
     if (valid_symbols[HOM_INNER_STRING_LEFT]) {
         lexer->result_symbol = HOM_INNER_STRING_LEFT;
         delim_exp delims[] = { HOM_INNER_CLOSE, DOTS };
-        return scan_string(lexer, 4, delims, true);
+        return scan_string(lexer, COUNT(delims), delims, true);
     }
     if (valid_symbols[HOM_INNER_STRING_INIT]) {
         lexer->result_symbol = HOM_INNER_STRING_INIT;
         delim_exp delims[] = { COMP_OPEN, HOM_INNER_CLOSE, DOTS };
-        return scan_string(lexer, 5, delims, true);
+        return scan_string(lexer, COUNT(delims), delims, true);
     }
     if (valid_symbols[HOM_INNER_COMP_LEFT]) {
         lexer->result_symbol = HOM_INNER_COMP_LEFT;
         delim_exp delims[] = { COMP_MIDDLE };
-        return scan_string(lexer, 1, delims, false);
+        return scan_string(lexer, COUNT(delims), delims, false);
     }
     return false;
 }
